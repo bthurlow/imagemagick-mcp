@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/bthurlow/imagemagick-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/bthurlow/imagemagick-mcp/actions/workflows/ci.yml)
 [![Release](https://github.com/bthurlow/imagemagick-mcp/actions/workflows/release.yml/badge.svg)](https://github.com/bthurlow/imagemagick-mcp/actions/workflows/release.yml)
-[![Coverage](https://img.shields.io/endpoint?url=https://bthurlow.github.io/imagemagick-mcp/badges/coverage.json)](https://github.com/bthurlow/imagemagick-mcp/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fbthurlow.github.io%2Fimagemagick-mcp%2Fbadges%2Fcoverage.json&cacheSeconds=300)](https://github.com/bthurlow/imagemagick-mcp/actions/workflows/ci.yml)
 [![GitHub release](https://img.shields.io/github/v/release/bthurlow/imagemagick-mcp)](https://github.com/bthurlow/imagemagick-mcp/releases/latest)
 [![License: MIT](https://img.shields.io/github/license/bthurlow/imagemagick-mcp)](https://github.com/bthurlow/imagemagick-mcp/blob/main/LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D22-brightgreen)](https://nodejs.org)
