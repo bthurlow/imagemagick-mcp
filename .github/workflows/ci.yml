@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
   lint:
     name: Lint & Format
@@ -106,13 +109,31 @@ jobs:
           echo "{\"schemaVersion\":1,\"label\":\"coverage\",\"message\":\"${PCT}%\",\"color\":\"${COLOR}\"}" > badges/coverage.json
       - name: Deploy coverage badge
         if: github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./badges
-          destination_dir: badges
-          publish_branch: gh-pages
-          keep_files: true
+        run: |
+          BADGE_JSON=$(cat badges/coverage.json)
+          DEPLOY_DIR=$(mktemp -d)
+          cd "$DEPLOY_DIR"
+          git init
+          git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/bthurlow/imagemagick-mcp.git"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Try to pull existing gh-pages
+          if git fetch origin gh-pages 2>/dev/null; then
+            git checkout gh-pages
+          else
+            git checkout --orphan gh-pages
+            touch .nojekyll
+            git add .nojekyll
+          fi
+
+          mkdir -p badges
+          echo "$BADGE_JSON" > badges/coverage.json
+          git add badges/coverage.json
+          git diff --staged --quiet || {
+            git commit -m "chore: update coverage badge"
+            git push origin gh-pages
+          }
 
   integration-tests:
     name: Integration Tests
