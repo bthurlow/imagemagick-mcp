@@ -1,6 +1,13 @@
 # imagemagick-mcp
 
-[![GitHub](https://img.shields.io/github/license/bthurlow/imagemagick-mcp)](https://github.com/bthurlow/imagemagick-mcp/blob/main/LICENSE)
+[![CI](https://github.com/bthurlow/imagemagick-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/bthurlow/imagemagick-mcp/actions/workflows/ci.yml)
+[![Release](https://github.com/bthurlow/imagemagick-mcp/actions/workflows/release.yml/badge.svg)](https://github.com/bthurlow/imagemagick-mcp/actions/workflows/release.yml)
+[![Coverage](https://img.shields.io/endpoint?url=https://bthurlow.github.io/imagemagick-mcp/badges/coverage.json)](https://github.com/bthurlow/imagemagick-mcp/actions/workflows/ci.yml)
+[![GitHub release](https://img.shields.io/github/v/release/bthurlow/imagemagick-mcp)](https://github.com/bthurlow/imagemagick-mcp/releases/latest)
+[![License: MIT](https://img.shields.io/github/license/bthurlow/imagemagick-mcp)](https://github.com/bthurlow/imagemagick-mcp/blob/main/LICENSE)
+[![Node](https://img.shields.io/badge/node-%3E%3D22-brightgreen)](https://nodejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)](https://www.typescriptlang.org/)
+[![MCP](https://img.shields.io/badge/MCP-compatible-purple)](https://modelcontextprotocol.io/)
 
 MCP server for ImageMagick — 57 tools for image processing, content creatives, ad generation, and web/mobile asset management.
 

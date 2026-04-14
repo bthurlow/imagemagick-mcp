@@ -93,6 +93,26 @@ jobs:
             " >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
           fi
+      - name: Generate coverage badge
+        if: github.ref == 'refs/heads/main'
+        run: |
+          PCT=$(node -e "console.log(require('./coverage/coverage-summary.json').total.statements.pct)")
+          if (( $(echo "$PCT >= 90" | bc -l) )); then COLOR="brightgreen";
+          elif (( $(echo "$PCT >= 80" | bc -l) )); then COLOR="green";
+          elif (( $(echo "$PCT >= 70" | bc -l) )); then COLOR="yellow";
+          elif (( $(echo "$PCT >= 60" | bc -l) )); then COLOR="orange";
+          else COLOR="red"; fi
+          mkdir -p badges
+          echo "{\"schemaVersion\":1,\"label\":\"coverage\",\"message\":\"${PCT}%\",\"color\":\"${COLOR}\"}" > badges/coverage.json
+      - name: Deploy coverage badge
+        if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./badges
+          destination_dir: badges
+          publish_branch: gh-pages
+          keep_files: true
 
   integration-tests:
     name: Integration Tests
