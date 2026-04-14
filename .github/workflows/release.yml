@@ -8,9 +8,6 @@ permissions:
   contents: write
   packages: write
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   # Only run if the commit message starts with a release prefix
   check-release:
@@ -20,7 +17,7 @@ jobs:
       should_release: ${{ steps.check.outputs.should_release }}
       release_type: ${{ steps.check.outputs.release_type }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Check commit for release trigger
@@ -53,8 +50,8 @@ jobs:
     if: needs.check-release.outputs.should_release == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: yarn
@@ -76,12 +73,12 @@ jobs:
     if: needs.check-release.outputs.should_release == 'true' && needs.check-release.outputs.release_type != 'none'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: yarn
@@ -158,7 +155,7 @@ jobs:
           git push
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.version.outputs.tag }}
           name: ${{ steps.version.outputs.tag }}
