@@ -36,9 +36,6 @@ jobs:
           elif echo "$MSG" | grep -qE '^fix(\(.+\))?:'; then
             echo "should_release=true" >> $GITHUB_OUTPUT
             echo "release_type=patch" >> $GITHUB_OUTPUT
-          elif echo "$MSG" | grep -qE '^chore\(release\):'; then
-            echo "should_release=true" >> $GITHUB_OUTPUT
-            echo "release_type=none" >> $GITHUB_OUTPUT
           else
             echo "should_release=false" >> $GITHUB_OUTPUT
             echo "release_type=none" >> $GITHUB_OUTPUT
@@ -61,7 +58,7 @@ jobs:
       - run: yarn typecheck
       - run: yarn build
       - run: yarn test:unit
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: dist
           path: dist/
@@ -70,28 +67,21 @@ jobs:
   release:
     name: Create Release
     needs: [check-release, ci]
-    if: needs.check-release.outputs.should_release == 'true' && needs.check-release.outputs.release_type != 'none'
+    if: needs.check-release.outputs.should_release == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: yarn
-          registry-url: https://registry.npmjs.org
 
       - run: yarn install --frozen-lockfile
 
-      - name: Configure git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Bump version
+      - name: Determine version
         id: version
         run: |
           RELEASE_TYPE=${{ needs.check-release.outputs.release_type }}
@@ -121,20 +111,11 @@ jobs:
           echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "tag=v$NEW_VERSION" >> $GITHUB_OUTPUT
 
-          # Update package.json
-          node -e "
-            const pkg = require('./package.json');
-            pkg.version = '$NEW_VERSION';
-            require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-          "
-
       - name: Build release
         run: yarn build
 
       - name: Generate changelog
-        id: changelog
         run: |
-          # Get commits since last tag
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
           if [ -n "$LAST_TAG" ]; then
             COMMITS=$(git log "$LAST_TAG"..HEAD --pretty=format:"- %s (%h)" --no-merges)
@@ -142,17 +123,11 @@ jobs:
             COMMITS=$(git log --pretty=format:"- %s (%h)" --no-merges)
           fi
 
-          # Write changelog to file for the release body
-          cat > /tmp/changelog.md << 'CHANGELOGEOF'
+          cat > /tmp/changelog.md << CHANGELOGEOF
           ## What's Changed
-          CHANGELOGEOF
-          echo "$COMMITS" >> /tmp/changelog.md
 
-      - name: Commit version bump
-        run: |
-          git add package.json
-          git commit -m "chore(release): v${{ steps.version.outputs.version }}"
-          git push
+          $COMMITS
+          CHANGELOGEOF
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
@@ -161,6 +136,7 @@ jobs:
           name: ${{ steps.version.outputs.tag }}
           body_path: /tmp/changelog.md
           generate_release_notes: true
+          target_commitish: ${{ github.sha }}
           draft: false
           prerelease: false
         env:
